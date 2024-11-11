@@ -1,10 +1,10 @@
+using System.Net;
 using MassTransit;
 using Polly;
 using Polly.Extensions.Http;
 using SearchService.Consumers;
 using SearchService.Data;
 using SearchService.Services;
-using System.Net;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,27 +16,27 @@ builder.Services.AddHttpClient<AuctionSvcHttpClient>().AddPolicyHandler(GetPolic
 builder.Services.AddMassTransit(x =>
 {
     x.AddConsumersFromNamespaceContaining<AuctionCreatedConsumer>();
-    x.AddConsumersFromNamespaceContaining<AuctionUpdatedConsumer>();
-    x.AddConsumersFromNamespaceContaining<AuctionDeletedConsumer>();
-
     x.SetEndpointNameFormatter(new KebabCaseEndpointNameFormatter("search", false));
-
     x.UsingRabbitMq((context, cfg) =>
     {
+        cfg.Host(builder.Configuration["RabbitMq:Host"], "/", h =>
+        {
+            h.Username(builder.Configuration.GetValue("RabbitMQ:Username", "guest")!);
+            h.Password(builder.Configuration.GetValue("RabbitMQ:Password", "guest")!);
+        });
         cfg.ReceiveEndpoint("search-auction-created", e =>
         {
             e.UseMessageRetry(r => r.Interval(5, 5));
 
             e.ConfigureConsumer<AuctionCreatedConsumer>(context);
-            e.ConfigureConsumer<AuctionUpdatedConsumer>(context);
-            e.ConfigureConsumer<AuctionDeletedConsumer>(context);
         });
-
         cfg.ConfigureEndpoints(context);
     });
 });
 
 var app = builder.Build();
+
+// Configure the HTTP request pipeline.
 
 app.UseAuthorization();
 
