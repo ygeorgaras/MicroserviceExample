@@ -1,50 +1,44 @@
-# .dockerignore
-
-# Visual Studio files
-.vs/
+# Ignore editor-specific settings
 .vscode/
+.vs/
+
+# Ignore user-specific files
 **/*.user
 **/*.userosscache
 **/*.sln.docstates
 
-# Build results
-[Dd]ebug/
-[Dd]ebugPublic/
-[Rr]elease/
-[Rr]eleases/
+# Ignore only output directories, but keep necessary intermediate files for the build
+**/[Dd]ebug/
+**/[Dd]ebugPublic/
+**/[Rr]elease/
+**/[Rr]eleases/
 x64/
 x86/
-build/
-bld/
 [Bb]in/
-[Oo]bj/
 [Oo]ut/
+
+# Keep the obj/ folder since Docker may need it for intermediate build artifacts.
+# Remove this if it causes issues or if it is certain not to be needed by Docker.
+
+# Ignore specific logs
 msbuild.log
 msbuild.err
 msbuild.wrn
 
-# Visual Studio cache/options directory
-.vs/
-*.vsidx
-
-# Visual Studio IntelliCode
-.vs/
-
-# ReSharper
+# Ignore ReSharper and other editor cache
 _ReSharper*/
 *.[Rr]e[Ss]harper
 *.DotSettings.user
 
-# NuGet
+# Ignore NuGet packages
 *.nupkg
-# NuGet Symbol Packages
 *.snupkg
-# The packages folder can be ignored because of Package Restore
+
+# Exclude packages folder, but allow build folders if used by MSBuild
 **/[Pp]ackages/*
-# except build/, which is used as an MSBuild target.
 !**/[Pp]ackages/build/
 
-# Others
+# Miscellaneous OS files
 *.swp
 *.bak
 *.cache
